@@ -1,0 +1,9 @@
+row_number,error_type,column_name,value
+2,INVALID_EMAIL,email,mary@gmail
+2,INVALID_PHONE,phone_number,12345
+2,INVALID_QUANTITY,quantity,-1
+2,INVALID_PRICE,price,-100
+3,FUTURE_DATE,order_date,2028-01-01
+4,INVALID_PAYMENT_MODE,payment_mode,BITCOIN
+5,FUTURE_DATE,order_date,01/01/2027
+5,INVALID_QUANTITY,quantity,0
