@@ -126,7 +126,10 @@ export default function DashboardPage() {
 
     <Typography
       variant="body2"
-      color="text.secondary"
+      sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
     >
       Quality Score
     </Typography>
@@ -219,82 +222,201 @@ export default function DashboardPage() {
 
               {/* Validation Summary */}
 
-              <div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+              {/* Validation Summary */}
 
-                <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                  Validation Summary
-                </h2>
+<Card
+  elevation={3}
+  sx={{
+    mt: 4,
+    borderRadius: 4
+  }}
+>
+  <CardContent>
 
-                <div className="grid md:grid-cols-3 gap-6">
+    <Typography
+      variant="h5"
+      sx={{
+        fontWeight: 700,
+        mb: 3
+      }}
+    >
+      Validation Summary
+    </Typography>
 
-                  <div className="border rounded-xl p-5">
-                    <p className="text-slate-500">
-                      Invalid Emails
-                    </p>
+    <div className="grid md:grid-cols-3 gap-6">
 
-                    <h3 className="text-4xl font-bold text-red-500 mt-2">
-                      {results.invalid_emails}
-                    </h3>
-                  </div>
+      <Card elevation={1}>
+        <CardContent>
 
-                  <div className="border rounded-xl p-5">
-                    <p className="text-slate-500">
-                      Invalid Phones
-                    </p>
+          <Typography
+            variant="body2"
+            sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
+          >
+            Invalid Emails
+          </Typography>
 
-                    <h3 className="text-4xl font-bold text-red-500 mt-2">
-                      {results.invalid_phones}
-                    </h3>
-                  </div>
+          <Typography
+            variant="h4"
+            color="error"
+            sx={{ fontWeight: 700 }}
+          >
+            {results.invalid_emails}
+          </Typography>
 
-                  <div className="border rounded-xl p-5">
-                    <p className="text-slate-500">
-                      Future Dates
-                    </p>
+        </CardContent>
+      </Card>
 
-                    <h3 className="text-4xl font-bold text-orange-500 mt-2">
-                      {results.future_dates}
-                    </h3>
-                  </div>
+      <Card elevation={1}>
+        <CardContent>
 
-                </div>
+          <Typography
+            variant="body2"
+            sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
+          >
+            Invalid Phones
+          </Typography>
 
-              </div>
+          <Typography
+            variant="h4"
+            color="error"
+            sx={{ fontWeight: 700 }}
+          >
+            {results.invalid_phones}
+          </Typography>
+
+        </CardContent>
+      </Card>
+
+      <Card elevation={1}>
+        <CardContent>
+
+          <Typography
+            variant="body2"
+            sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
+          >
+            Future Dates
+          </Typography>
+
+          <Typography
+            variant="h4"
+            color="warning.main"
+            sx={{ fontWeight: 700 }}
+          >
+            {results.future_dates}
+          </Typography>
+
+        </CardContent>
+      </Card>
+
+    </div>
+
+  </CardContent>
+</Card>
 
               {/* Transaction Validation */}
 
-              <div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+              {/* Transaction Validation */}
 
-                <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                  Transaction Validation
-                </h2>
+<Card
+  elevation={3}
+  sx={{
+    mt: 4,
+    borderRadius: 4
+  }}
+>
+  <CardContent>
 
-                <div className="grid md:grid-cols-3 gap-6">
+    <Typography
+      variant="h5"
+      sx={{
+        fontWeight: 700,
+        mb: 3
+      }}
+    >
+      Transaction Validation
+    </Typography>
 
-                  <div className="border rounded-xl p-5">
-                    <p>Invalid Order Dates</p>
-                    <h3 className="text-4xl font-bold text-red-500 mt-2">
-                      {results.invalid_order_dates}
-                    </h3>
-                  </div>
+    <div className="grid md:grid-cols-3 gap-6">
 
-                  <div className="border rounded-xl p-5">
-                    <p>Invalid Quantity</p>
-                    <h3 className="text-4xl font-bold text-red-500 mt-2">
-                      {results.invalid_quantity}
-                    </h3>
-                  </div>
+      <Card elevation={1}>
+        <CardContent>
+          <Typography
+            variant="body2"
+            sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
+          >
+            Invalid Order Dates
+          </Typography>
 
-                  <div className="border rounded-xl p-5">
-                    <p>Invalid Price</p>
-                    <h3 className="text-4xl font-bold text-red-500 mt-2">
-                      {results.invalid_price}
-                    </h3>
-                  </div>
+          <Typography
+            variant="h4"
+            color="error"
+            sx={{ fontWeight: 700 }}
+          >
+            {results.invalid_order_dates}
+          </Typography>
+        </CardContent>
+      </Card>
 
-                </div>
+      <Card elevation={1}>
+        <CardContent>
+          <Typography
+            variant="body2"
+            sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
+          >
+            Invalid Quantity
+          </Typography>
 
-              </div>
+          <Typography
+            variant="h4"
+            color="error"
+            sx={{ fontWeight: 700 }}
+          >
+            {results.invalid_quantity}
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Card elevation={1}>
+        <CardContent>
+          <Typography
+            variant="body2"
+            sx={{
+  color: "#334155",
+  fontWeight: 500
+}}
+          >
+            Invalid Price
+          </Typography>
+
+          <Typography
+            variant="h4"
+            color="error"
+            sx={{ fontWeight: 700 }}
+          >
+            {results.invalid_price}
+          </Typography>
+        </CardContent>
+      </Card>
+
+    </div>
+
+  </CardContent>
+</Card>
 
               {/* Payment Validation */}
 
