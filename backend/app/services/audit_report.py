@@ -1,83 +1,426 @@
-from openpyxl import Workbook
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    PageBreak,
+    Table,
+    TableStyle
+)
+
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+
+import os
+
+OUTPUT_DIR = "outputs"
+
+os.makedirs(
+    OUTPUT_DIR,
+    exist_ok=True
+)
+
+
+def get_status(score):
+
+    if score >= 90:
+        return "EXCELLENT"
+
+    elif score >= 75:
+        return "GOOD"
+
+    elif score >= 50:
+        return "AVERAGE"
+
+    return "POOR"
 
 
 def generate_audit_report(results):
 
-    wb = Workbook()
+    output_path = os.path.join(
+        OUTPUT_DIR,
+        "audit_report.pdf"
+    )
 
-    # =====================
-    # Summary Sheet
-    # =====================
+    doc = SimpleDocTemplate(
+        output_path
+    )
 
-    ws1 = wb.active
-    ws1.title = "Summary"
+    styles = getSampleStyleSheet()
 
-    ws1.append(["Metric", "Value"])
+    elements = []
 
-    ws1.append(["Total Rows", results["total_rows"]])
-    ws1.append(["Quality Score", results["quality_score"]])
-    ws1.append(["Duplicate Rows", results["duplicate_rows"]])
-    ws1.append(["Missing Values", results["missing_values"]])
-    ws1.append(["Invalid Emails", results["invalid_emails"]])
-    ws1.append(["Invalid Phones", results["invalid_phones"]])
+    # =================================
+    # TITLE
+    # =================================
 
-    # =====================
-    # Validation Sheet
-    # =====================
+    elements.append(
+        Paragraph(
+            "DataSentinel AI",
+            styles["Title"]
+        )
+    )
 
-    ws2 = wb.create_sheet("Validation Results")
+    elements.append(
+        Paragraph(
+            "Transaction Data Validation Audit Report",
+            styles["Heading2"]
+        )
+    )
 
-    ws2.append(["Metric", "Value"])
+    elements.append(
+        Spacer(1, 20)
+    )
 
-    ws2.append([
-        "Future Dates",
-        results["future_dates"]
-    ])
+    # =================================
+    # EXECUTIVE SUMMARY
+    # =================================
 
-    ws2.append([
-        "Invalid Order Dates",
-        results["invalid_order_dates"]
-    ])
+    elements.append(
+        Paragraph(
+            "Executive Summary",
+            styles["Heading1"]
+        )
+    )
 
-    ws2.append([
-        "Invalid Quantity",
-        results["invalid_quantity"]
-    ])
+    status = get_status(
+        results["quality_score"]
+    )
 
-    ws2.append([
-        "Invalid Price",
-        results["invalid_price"]
-    ])
+    summary_text = f"""
+    Dataset Health Status:
+    <b>{status}</b><br/><br/>
 
-    ws2.append([
-        "Invalid Payment Modes",
-        results["invalid_payment_modes"]
-    ])
+    Quality Score:
+    <b>{results['quality_score']}%</b><br/><br/>
 
-    # =====================
-    # Column Analysis
-    # =====================
+    Total Rows Analysed:
+    <b>{results['total_rows']}</b>
+    """
 
-    ws3 = wb.create_sheet("Column Analysis")
+    elements.append(
+        Paragraph(
+            summary_text,
+            styles["BodyText"]
+        )
+    )
 
-    ws3.append([
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    # =================================
+    # VALIDATION RESULTS
+    # =================================
+
+    elements.append(
+        Paragraph(
+            "Validation Results",
+            styles["Heading1"]
+        )
+    )
+
+    validation_data = [
+
+        ["Validation Type", "Count"],
+
+        ["Duplicate Rows",
+         results["duplicate_rows"]],
+
+        ["Missing Values",
+         results["missing_values"]],
+
+        ["Invalid Emails",
+         results["invalid_emails"]],
+
+        ["Invalid Phones",
+         results["invalid_phones"]],
+
+        ["Future Dates",
+         results["future_dates"]],
+
+        ["Invalid Order Dates",
+         results["invalid_order_dates"]],
+
+        ["Invalid Quantity",
+         results["invalid_quantity"]],
+
+        ["Invalid Price",
+         results["invalid_price"]],
+
+        ["Invalid Payment Modes",
+         results["invalid_payment_modes"]],
+
+        ["Invalid Date Formats",
+         results.get(
+             "invalid_date_formats",
+             0
+         )]
+
+    ]
+
+    validation_table = Table(
+        validation_data,
+        colWidths=[250, 100]
+    )
+
+    validation_table.setStyle(
+        TableStyle([
+
+            ("BACKGROUND",
+             (0, 0),
+             (-1, 0),
+             colors.HexColor("#4F46E5")),
+
+            ("TEXTCOLOR",
+             (0, 0),
+             (-1, 0),
+             colors.white),
+
+            ("GRID",
+             (0, 0),
+             (-1, -1),
+             1,
+             colors.black),
+
+            ("FONTNAME",
+             (0, 0),
+             (-1, 0),
+             "Helvetica-Bold")
+
+        ])
+    )
+
+    elements.append(
+        validation_table
+    )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    # =================================
+    # DATASET PROFILE
+    # =================================
+
+    elements.append(
+        Paragraph(
+            "Dataset Profile",
+            styles["Heading1"]
+        )
+    )
+
+    profile_data = [
+
+        ["Metric", "Value"],
+
+        ["Total Columns",
+         results["total_columns"]],
+
+        ["Numeric Columns",
+         results["numeric_columns"]],
+
+        ["Categorical Columns",
+         results["categorical_columns"]],
+
+        ["Memory Usage (MB)",
+         results["memory_usage_mb"]]
+
+    ]
+
+    profile_table = Table(
+        profile_data,
+        colWidths=[250, 100]
+    )
+
+    profile_table.setStyle(
+        TableStyle([
+
+            ("BACKGROUND",
+             (0, 0),
+             (-1, 0),
+             colors.HexColor("#10B981")),
+
+            ("TEXTCOLOR",
+             (0, 0),
+             (-1, 0),
+             colors.white),
+
+            ("GRID",
+             (0, 0),
+             (-1, -1),
+             1,
+             colors.black)
+
+        ])
+    )
+
+    elements.append(
+        profile_table
+    )
+
+    elements.append(
+        PageBreak()
+    )
+
+    # =================================
+    # COLUMN ANALYSIS
+    # =================================
+
+    elements.append(
+        Paragraph(
+            "Column Analysis",
+            styles["Heading1"]
+        )
+    )
+
+    column_data = [[
+
         "Column",
-        "Data Type",
-        "Missing Values",
-        "Unique Values"
-    ])
+        "Type",
+        "Missing",
+        "Unique"
 
-    for column in results["column_summary"]:
+    ]]
 
-        ws3.append([
-            column["column"],
-            column["dtype"],
-            column["missing_values"],
-            column["unique_values"]
+    for col in results[
+        "column_summary"
+    ]:
+
+        column_data.append([
+
+            col["column"],
+
+            col["dtype"],
+
+            str(
+                col["missing_values"]
+            ),
+
+            str(
+                col["unique_values"]
+            )
+
         ])
 
-    output_path = "outputs/audit_report.xlsx"
+    column_table = Table(
+        column_data
+    )
 
-    wb.save(output_path)
+    column_table.setStyle(
+        TableStyle([
+
+            ("BACKGROUND",
+             (0, 0),
+             (-1, 0),
+             colors.HexColor("#F59E0B")),
+
+            ("TEXTCOLOR",
+             (0, 0),
+             (-1, 0),
+             colors.white),
+
+            ("GRID",
+             (0, 0),
+             (-1, -1),
+             1,
+             colors.black)
+
+        ])
+    )
+
+    elements.append(
+        column_table
+    )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    # =================================
+    # AI RECOMMENDATIONS
+    # =================================
+
+    elements.append(
+        Paragraph(
+            "AI Recommendations",
+            styles["Heading1"]
+        )
+    )
+
+    recommendations = []
+
+    if results["invalid_emails"] > 0:
+        recommendations.append(
+            "• Correct invalid email formats."
+        )
+
+    if results["invalid_phones"] > 0:
+        recommendations.append(
+            "• Verify phone numbers using country-specific validation."
+        )
+
+    if results["missing_values"] > 0:
+        recommendations.append(
+            "• Fill missing mandatory fields."
+        )
+
+    if results["duplicate_rows"] > 0:
+        recommendations.append(
+            "• Remove duplicate records before processing."
+        )
+
+    if results["future_dates"] > 0:
+        recommendations.append(
+            "• Review future-dated transactions."
+        )
+
+    if len(recommendations) == 0:
+
+        recommendations.append(
+            "• No major issues detected."
+        )
+
+    for item in recommendations:
+
+        elements.append(
+            Paragraph(
+                item,
+                styles["BodyText"]
+            )
+        )
+
+    elements.append(
+        Spacer(1, 20)
+    )
+
+    # =================================
+    # FINAL VERDICT
+    # =================================
+
+    elements.append(
+        Paragraph(
+            "Final Assessment",
+            styles["Heading1"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            f"""
+            Overall Status:
+            <b>{status}</b><br/><br/>
+
+            Generated by:
+            <b>DataSentinel AI</b><br/>
+
+            Enterprise Data Validation Platform
+            """,
+            styles["BodyText"]
+        )
+    )
+
+    doc.build(
+        elements
+    )
 
     return output_path

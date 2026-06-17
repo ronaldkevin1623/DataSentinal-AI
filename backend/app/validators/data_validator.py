@@ -35,13 +35,17 @@ def validate_dataset(df):
 
     if "email" in df.columns:
 
-        invalid_emails = int(
-            (~df["email"]
-             .fillna("")
-             .astype(str)
-             .str.match(email_pattern))
-            .sum()
-        )
+        email_series = (
+    df["email"]
+    .dropna()
+    .astype(str)
+)
+
+    invalid_emails = int(
+        (~email_series.str.match(
+            email_pattern
+        )).sum()
+    )
 
     # -----------------------------
     # Phone Validation
@@ -177,29 +181,33 @@ def validate_dataset(df):
 
     validation_errors = (
 
-        invalid_emails +
+    invalid_emails +
 
-        invalid_phones +
+    invalid_phones +
 
-        future_dates +
+    future_dates +
 
-        order_results[
-            "invalid_order_dates"
-        ] +
+    order_results[
+        "invalid_order_dates"
+    ] +
 
-        product_results[
-            "invalid_quantity"
-        ] +
+    order_results[
+        "invalid_date_formats"
+    ] +
 
-        product_results[
-            "invalid_price"
-        ] +
+    product_results[
+        "invalid_quantity"
+    ] +
 
-        payment_results[
-            "invalid_payment_modes"
-        ]
+    product_results[
+        "invalid_price"
+    ] +
 
-    )
+    payment_results[
+        "invalid_payment_modes"
+    ]
+
+)
 
     validation_percentage = (
 

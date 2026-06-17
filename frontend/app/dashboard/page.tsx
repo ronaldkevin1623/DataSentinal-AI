@@ -345,7 +345,7 @@ export default function DashboardPage() {
       Transaction Validation
     </Typography>
 
-    <div className="grid md:grid-cols-3 gap-6">
+    <div className="grid md:grid-cols-4 gap-6">
 
       <Card elevation={1}>
         <CardContent>
@@ -412,6 +412,31 @@ export default function DashboardPage() {
           </Typography>
         </CardContent>
       </Card>
+      <Card elevation={1}>
+  <CardContent>
+
+    <Typography
+      variant="body2"
+      sx={{
+        color: "#334155",
+        fontWeight: 500
+      }}
+    >
+      Invalid Date Formats
+    </Typography>
+
+    <Typography
+      variant="h4"
+      color="error"
+      sx={{
+        fontWeight: 700
+      }}
+    >
+      {results.invalid_date_formats}
+    </Typography>
+
+  </CardContent>
+</Card>
 
     </div>
 
@@ -444,26 +469,19 @@ export default function DashboardPage() {
 
               <Card
   elevation={3}
-  sx={{ mt: 4 }}
->
-  <CardContent>
-
-    <Typography
   sx={{
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    mb: 2
+    mt: 4,
+    borderRadius: 4
   }}
 >
-  AI Insights
-</Typography>
-
-    <Card elevation={3} sx={{ mt: 4 }}>
   <CardContent>
 
     <Typography
-      variant="h6"
-      sx={{ fontWeight: 700, mb: 2 }}
+      variant="h5"
+      sx={{
+        fontWeight: 700,
+        mb: 3
+      }}
     >
       AI Insights
     </Typography>
@@ -471,9 +489,6 @@ export default function DashboardPage() {
     <Alert severity="info">
       {results.ai_insight}
     </Alert>
-
-  </CardContent>
-</Card>
 
   </CardContent>
 </Card>

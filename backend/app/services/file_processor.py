@@ -1,6 +1,7 @@
 import pandas as pd
 import os
-
+from validators.date_validator import validate_date
+from validators.phone_validator import validate_phone
 
 OUTPUT_DIR = "outputs"
 
@@ -12,11 +13,97 @@ os.makedirs(
 
 def generate_cleaned_file(df):
 
-    cleaned_df = (
-        df
-        .drop_duplicates()
-        .fillna("")
+    import re
+    from datetime import datetime
+
+    cleaned_df = df.copy()
+
+    email_pattern = (
+        r'^[A-Za-z0-9._%+-]+'
+        r'@[A-Za-z0-9.-]+'
+        r'\.[A-Za-z]{2,}$'
     )
+
+    VALID_PAYMENT_MODES = [
+        "CARD",
+        "UPI",
+        "NETBANKING",
+        "WALLET",
+        "CASH"
+    ]
+
+    # Remove duplicates
+    cleaned_df = cleaned_df.drop_duplicates()
+
+    # Remove rows with missing values
+    cleaned_df = cleaned_df.dropna()
+
+    # -------------------------
+    # Email Validation
+    # -------------------------
+
+    if "email" in cleaned_df.columns:
+
+        cleaned_df = cleaned_df[
+            cleaned_df["email"]
+            .astype(str)
+            .str.match(email_pattern)
+        ]
+
+    # -------------------------
+    # Phone Validation
+    # -------------------------
+
+    if (
+        "phone_number" in cleaned_df.columns
+        and "country_code" in cleaned_df.columns
+    ):
+
+        cleaned_df = cleaned_df[
+            cleaned_df.apply(
+                lambda row:
+                validate_phone(
+                    row["phone_number"],
+                    row["country_code"]
+                ),
+                axis=1
+            )
+        ]
+
+    # -------------------------
+    # Quantity Validation
+    # -------------------------
+
+    if "quantity" in cleaned_df.columns:
+
+        cleaned_df = cleaned_df[
+            cleaned_df["quantity"] > 0
+        ]
+
+    # -------------------------
+    # Price Validation
+    # -------------------------
+
+    if "price" in cleaned_df.columns:
+
+        cleaned_df = cleaned_df[
+            cleaned_df["price"] > 0
+        ]
+
+    # -------------------------
+    # Payment Validation
+    # -------------------------
+
+    if "payment_mode" in cleaned_df.columns:
+
+        cleaned_df = cleaned_df[
+            cleaned_df["payment_mode"]
+            .astype(str)
+            .str.upper()
+            .isin(
+                VALID_PAYMENT_MODES
+            )
+        ]
 
     path = os.path.join(
         OUTPUT_DIR,
@@ -37,6 +124,8 @@ def generate_error_report(df):
     from datetime import datetime
 
     errors = []
+
+    duplicate_mask = df.duplicated()
 
     email_pattern = (
         r'^[A-Za-z0-9._%+-]+'
@@ -72,6 +161,19 @@ def generate_error_report(df):
                 })
 
         # -------------------------
+        # Duplicate Row
+        # -------------------------
+
+        if duplicate_mask.iloc[index]:
+
+            errors.append({
+                "row_number": index + 1,
+                "error_type": "DUPLICATE_ROW",
+                "column_name": "ALL",
+                "value": ""
+            })
+
+        # -------------------------
         # Invalid Email
         # -------------------------
 
@@ -100,13 +202,33 @@ def generate_error_report(df):
         # Invalid Phone
         # -------------------------
 
-        if "phone_number" in df.columns:
+        if (
+            "phone_number" in df.columns
+            and "country_code" in df.columns
+        ):
+
+            if not validate_phone(
+                row["phone_number"],
+                row["country_code"]
+            ):
+
+                errors.append({
+                    "row_number": index + 1,
+                    "error_type": "INVALID_PHONE",
+                    "column_name": "phone_number",
+                    "value": row["phone_number"]
+                })
+
+        elif "phone_number" in df.columns:
 
             phone = str(
                 row["phone_number"]
             )
 
-            if not phone.isdigit() or len(phone) != 10:
+            if (
+                not phone.isdigit()
+                or len(phone) != 10
+            ):
 
                 errors.append({
                     "row_number": index + 1,
@@ -119,30 +241,53 @@ def generate_error_report(df):
         # Future Date
         # -------------------------
 
-        date_column = None
+        # -------------------------
+# Date Validation
+# -------------------------
 
-        if "signup_date" in df.columns:
-            date_column = "signup_date"
+    date_column = None
 
-        elif "order_date" in df.columns:
-            date_column = "order_date"
+    if "signup_date" in df.columns:
+        date_column = "signup_date"
 
-        if date_column:
+    elif "order_date" in df.columns:
+        date_column = "order_date"
+
+    if date_column:
+
+        raw_date = str(
+            row[date_column]
+        )
+
+        # Invalid Date Format
+
+        if not validate_date(
+            raw_date
+        ):
+
+            errors.append({
+                "row_number": index + 1,
+                "error_type": "INVALID_DATE_FORMAT",
+                "column_name": date_column,
+                "value": raw_date
+            })
+
+        else:
 
             try:
 
-                date_value = pd.to_datetime(
-                    row[date_column],
+                parsed_date = pd.to_datetime(
+                    raw_date,
                     dayfirst=True
                 )
 
-                if date_value > datetime.now():
+                if parsed_date > datetime.now():
 
                     errors.append({
                         "row_number": index + 1,
                         "error_type": "FUTURE_DATE",
                         "column_name": date_column,
-                        "value": str(row[date_column])
+                        "value": raw_date
                     })
 
             except:
@@ -223,4 +368,4 @@ def generate_error_report(df):
         index=False
     )
 
-    return path              
+    return path

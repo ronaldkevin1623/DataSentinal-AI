@@ -155,10 +155,7 @@ def download_chunk(chunk_id: int):
 def download_audit():
 
     return FileResponse(
-        "outputs/audit_report.xlsx",
-        media_type=(
-            "application/vnd.openxmlformats-"
-            "officedocument.spreadsheetml.sheet"
-        ),
-        filename="audit_report.xlsx"
+        "outputs/audit_report.pdf",
+        media_type="application/pdf",
+        filename="audit_report.pdf"
     )
