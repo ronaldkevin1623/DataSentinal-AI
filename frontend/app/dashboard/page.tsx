@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
       <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 px-6 py-10">
 
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full px-8">
 
           <h1 className="text-5xl font-black text-slate-900">
             Dataset Analysis Dashboard
@@ -71,37 +71,49 @@ export default function DashboardPage() {
 
           {/* Upload Section */}
 
-          <div className="bg-white rounded-3xl shadow-lg p-8 mt-10">
+          <div className="bg-white rounded-3xl shadow-lg p-12 mt-10">
 
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">
-              Upload Dataset
-            </h2>
+  <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">
+    Upload Transaction Dataset
+  </h2>
 
-            <div className="flex flex-col md:flex-row gap-4 items-center">
+  <div className="flex flex-col lg:flex-row items-center gap-6">
 
-              <input
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                onChange={(e) =>
-                  setFile(
-                    e.target.files?.[0] || null
-                  )
-                }
-                className="w-full border rounded-xl p-3"
-              />
+    <input
+      type="file"
+      accept=".csv,.xlsx,.xls"
+      onChange={(e) =>
+        setFile(
+          e.target.files?.[0] || null
+        )
+      }
+      className="flex-1 border-2 border-slate-300 rounded-xl p-5 text-lg"
+    />
 
-              <button
-                onClick={uploadFile}
-                className="bg-indigo-600 hover:bg-indigo-700 transition text-white px-8 py-3 rounded-xl font-semibold shadow-md"
-              >
-                {loading
-                  ? "Analyzing..."
-                  : "Analyze File"}
-              </button>
+    <button
+      onClick={uploadFile}
+      className="
+bg-indigo-600
+hover:bg-indigo-700
+transition
+text-white
+px-12
+py-5
+rounded-2xl
+text-xl
+font-bold
+shadow-xl
+whitespace-nowrap
+"
+    >
+      {loading
+        ? "Analyzing Dataset..."
+        : "Analyze Dataset"}
+    </button>
 
-            </div>
+  </div>
 
-          </div>
+</div>
           
           {results && (
 
@@ -109,14 +121,14 @@ export default function DashboardPage() {
 
               {/* KPI Cards */}
 
-              <div className="grid md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
 
-                <div className="bg-white rounded-2xl shadow-md p-6">
+                <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[180px]">
                   <p className="text-slate-500">
                     Total Rows
                   </p>
 
-                  <h3 className="text-5xl font-bold text-slate-900 mt-2">
+                  <h3 className="text-6xl font-black text-slate-900 mt-2">
                     {results.total_rows}
                   </h3>
                 </div>
@@ -198,22 +210,22 @@ export default function DashboardPage() {
   </CardContent>
 </Card>
 
-                <div className="bg-white rounded-2xl shadow-md p-6">
+                <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[180px]">
                   <p className="text-slate-500">
                     Duplicate Rows
                   </p>
 
-                  <h3 className="text-5xl font-bold text-red-600 mt-2">
+                  <h3 className="text-6xl font-black text-red-600 mt-2">
                     {results.duplicate_rows}
                   </h3>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-md p-6">
+                <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[180px]">
                   <p className="text-slate-500">
                     Missing Values
                   </p>
 
-                  <h3 className="text-5xl font-bold text-orange-500 mt-2">
+                  <h3 className="text-6xl font-black text-orange-500 mt-2">
                     {results.missing_values}
                   </h3>
                 </div>
@@ -705,30 +717,34 @@ export default function DashboardPage() {
 
           {/* Footer */}
 
-          <div className="mt-16 border-t border-slate-300 pt-8 pb-4 text-center">
-
-            <h3 className="text-lg font-bold text-slate-800">
-              DataSentinel AI
-            </h3>
-
-            <p className="mt-2 text-slate-600">
-              Enterprise Transaction Data Validation &
-              Processing Platform
-            </p>
-
-            <p className="mt-2 text-sm text-slate-500">
-              Validate • Cleanse • Audit • Process
-            </p>
-
-            <p className="mt-3 text-xs text-slate-400">
-              © 2026 DataSentinel AI. All Rights Reserved.
-            </p>
-
-          </div>
+          
 
         </div>
 
       </main>
+      <footer className="mt-20 bg-white border-t shadow-inner">
+
+  <div className="max-w-[1700px] mx-auto py-8 text-center">
+
+    <h3 className="text-2xl font-bold text-slate-900">
+      DataSentinel AI
+    </h3>
+
+    <p className="mt-2 text-slate-600">
+      Enterprise Transaction Data Validation & Processing Platform
+    </p>
+
+    <p className="mt-2 text-slate-500">
+      Validate • Cleanse • Audit • Process
+    </p>
+
+    <p className="mt-4 text-sm text-slate-400">
+      © 2026 DataSentinel AI. All Rights Reserved.
+    </p>
+
+  </div>
+
+</footer>
     </>
   );
 }
