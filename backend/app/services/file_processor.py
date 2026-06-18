@@ -177,26 +177,34 @@ def generate_error_report(df):
         # Invalid Email
         # -------------------------
 
+        # -------------------------
+    
+
         if "email" in df.columns:
 
-            email = str(
-                row["email"]
-            )
+            email_value = row["email"]
 
-            if (
-                email
-                and not re.match(
-                    email_pattern,
+            # Skip missing values
+            if not pd.isna(email_value):
+
+                email = str(
+                    email_value
+                ).strip()
+
+                if (
                     email
-                )
-            ):
+                    and not re.match(
+                        email_pattern,
+                        email
+                    )
+                ):
 
-                errors.append({
-                    "row_number": index + 1,
-                    "error_type": "INVALID_EMAIL",
-                    "column_name": "email",
-                    "value": email
-                })
+                    errors.append({
+                        "row_number": index + 1,
+                        "error_type": "INVALID_EMAIL",
+                        "column_name": "email",
+                        "value": email
+                    })
 
         # -------------------------
         # Invalid Phone
@@ -245,53 +253,60 @@ def generate_error_report(df):
 # Date Validation
 # -------------------------
 
-    date_column = None
+        
 
-    if "signup_date" in df.columns:
-        date_column = "signup_date"
+        date_column = None
 
-    elif "order_date" in df.columns:
-        date_column = "order_date"
+        if "signup_date" in df.columns:
+            date_column = "signup_date"
 
-    if date_column:
+        elif "order_date" in df.columns:
+            date_column = "order_date"
 
-        raw_date = str(
-            row[date_column]
-        )
+        if date_column:
 
-        # Invalid Date Format
+            date_value = row[date_column]
 
-        if not validate_date(
-            raw_date
-        ):
+            # Skip missing dates
+            if not pd.isna(date_value):
 
-            errors.append({
-                "row_number": index + 1,
-                "error_type": "INVALID_DATE_FORMAT",
-                "column_name": date_column,
-                "value": raw_date
-            })
+                raw_date = str(
+                    date_value
+                ).strip()
 
-        else:
+                # Invalid Date Format
 
-            try:
-
-                parsed_date = pd.to_datetime(
-                    raw_date,
-                    dayfirst=True
-                )
-
-                if parsed_date > datetime.now():
+                if not validate_date(
+                    raw_date
+                ):
 
                     errors.append({
                         "row_number": index + 1,
-                        "error_type": "FUTURE_DATE",
+                        "error_type": "INVALID_DATE_FORMAT",
                         "column_name": date_column,
                         "value": raw_date
                     })
 
-            except:
-                pass
+                else:
+
+                    try:
+
+                        parsed_date = pd.to_datetime(
+                            raw_date,
+                            dayfirst=True
+                        )
+
+                        if parsed_date > datetime.now():
+
+                            errors.append({
+                                "row_number": index + 1,
+                                "error_type": "FUTURE_DATE",
+                                "column_name": date_column,
+                                "value": raw_date
+                            })
+
+                    except:
+                        pass
 
         # -------------------------
         # Invalid Quantity

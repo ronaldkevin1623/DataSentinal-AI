@@ -6,10 +6,10 @@ from reportlab.platypus import (
     Table,
     TableStyle
 )
-
+from datetime import datetime
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-
+from reportlab.platypus import KeepTogether
 import os
 
 OUTPUT_DIR = "outputs"
@@ -53,6 +53,19 @@ def generate_audit_report(results):
     # TITLE
     # =================================
 
+    # =================================
+# TITLE
+# =================================
+
+    
+
+    report_id = (
+        "DSAI-"
+        + datetime.now().strftime(
+            "%Y%m%d-%H%M%S"
+        )
+    )
+
     elements.append(
         Paragraph(
             "DataSentinel AI",
@@ -62,14 +75,40 @@ def generate_audit_report(results):
 
     elements.append(
         Paragraph(
-            "Transaction Data Validation Audit Report",
+            "Enterprise Transaction Validation Audit Report",
             styles["Heading2"]
+        )
+    )
+
+    elements.append(
+        Spacer(1, 10)
+    )
+
+    elements.append(
+        Paragraph(
+            f"Report ID: <b>{report_id}</b>",
+            styles["BodyText"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            f"Generated On: <b>{datetime.now().strftime('%d-%b-%Y %I:%M %p')}</b>",
+            styles["BodyText"]
+        )
+    )
+
+    elements.append(
+        Paragraph(
+            "Platform: <b>DataSentinel AI</b>",
+            styles["BodyText"]
         )
     )
 
     elements.append(
         Spacer(1, 20)
     )
+    
 
     # =================================
     # EXECUTIVE SUMMARY
@@ -87,15 +126,21 @@ def generate_audit_report(results):
     )
 
     summary_text = f"""
-    Dataset Health Status:
-    <b>{status}</b><br/><br/>
+Dataset Health Status:
+<b>{status}</b><br/><br/>
 
-    Quality Score:
-    <b>{results['quality_score']}%</b><br/><br/>
+Quality Score:
+<b>{results['quality_score']}%</b><br/><br/>
 
-    Total Rows Analysed:
-    <b>{results['total_rows']}</b>
-    """
+Rows Processed:
+<b>{results['total_rows']}</b><br/>
+
+Columns Processed:
+<b>{results['total_columns']}</b><br/>
+
+Memory Usage:
+<b>{results['memory_usage_mb']} MB</b>
+"""
 
     elements.append(
         Paragraph(
@@ -255,8 +300,143 @@ def generate_audit_report(results):
     )
 
     elements.append(
-        profile_table
+    profile_table
+)
+
+    elements.append(
+        Spacer(1, 20)
     )
+
+    # =================================
+    # VALIDATION COVERAGE
+    # =================================
+
+    # =================================
+# VALIDATION STATUS
+# =================================
+
+    validation_heading = Paragraph(
+        "Validation Coverage & Results",
+        styles["Heading1"]
+)
+
+    validation_status = [
+
+        ["Validation Check", "Status"],
+
+        [
+            "Email Validation",
+            "Issues Found"
+            if results["invalid_emails"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Phone Validation",
+            "Issues Found"
+            if results["invalid_phones"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Date Format Validation",
+            "Issues Found"
+            if results.get(
+                "invalid_date_formats",
+                0
+            ) > 0
+            else "Passed"
+        ],
+
+        [
+            "Future Date Validation",
+            "Issues Found"
+            if results["future_dates"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Product Quantity Validation",
+            "Issues Found"
+            if results["invalid_quantity"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Product Price Validation",
+            "Issues Found"
+            if results["invalid_price"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Payment Mode Validation",
+            "Issues Found"
+            if results["invalid_payment_modes"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Missing Value Detection",
+            "Issues Found"
+            if results["missing_values"] > 0
+            else "Passed"
+        ],
+
+        [
+            "Duplicate Detection",
+            "Issues Found"
+            if results["duplicate_rows"] > 0
+            else "Passed"
+        ]
+
+    ]
+
+    status_table = Table(
+        validation_status,
+        colWidths=[250, 120]
+    )
+
+    status_table.setStyle(
+        TableStyle([
+
+            ("BACKGROUND",
+            (0, 0),
+            (-1, 0),
+            colors.HexColor("#2563EB")),
+
+            ("TEXTCOLOR",
+            (0, 0),
+            (-1, 0),
+            colors.white),
+
+            ("GRID",
+            (0, 0),
+            (-1, -1),
+            1,
+            colors.black),
+
+            ("FONTNAME",
+            (0, 0),
+            (-1, 0),
+            "Helvetica-Bold")
+
+        ])
+    )
+
+    elements.append(
+
+    KeepTogether([
+
+        validation_heading,
+
+        Spacer(1, 10),
+
+        status_table
+
+    ])
+
+)
 
     elements.append(
         PageBreak()
@@ -405,19 +585,35 @@ def generate_audit_report(results):
     )
 
     elements.append(
-        Paragraph(
-            f"""
-            Overall Status:
-            <b>{status}</b><br/><br/>
+    Paragraph(
+        f"""
+        Overall Assessment<br/><br/>
 
-            Generated by:
-            <b>DataSentinel AI</b><br/>
+        Quality Status:
+        <b>{status}</b><br/><br/>
 
-            Enterprise Data Validation Platform
-            """,
-            styles["BodyText"]
-        )
+        The dataset has been analysed using
+        DataSentinel AI validation rules and
+        is suitable for downstream processing
+        after addressing the identified issues.<br/><br/>
+
+        Approval Status:
+        <b>{
+        "Approved"
+        if results["quality_score"] >= 90
+        else "Conditionally Approved"
+        if results["quality_score"] >= 70
+        else "Rejected"
+        }</b><br/><br/>
+
+        Generated by:
+        <b>DataSentinel AI</b><br/>
+
+        Enterprise Data Validation Platform
+        """,
+        styles["BodyText"]
     )
+)
 
     doc.build(
         elements

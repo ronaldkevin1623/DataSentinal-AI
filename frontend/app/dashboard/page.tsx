@@ -699,9 +699,32 @@ export default function DashboardPage() {
 
 </div>
 
-            </div>
+                        </div>
 
           )}
+
+          {/* Footer */}
+
+          <div className="mt-16 border-t border-slate-300 pt-8 pb-4 text-center">
+
+            <h3 className="text-lg font-bold text-slate-800">
+              DataSentinel AI
+            </h3>
+
+            <p className="mt-2 text-slate-600">
+              Enterprise Transaction Data Validation &
+              Processing Platform
+            </p>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Validate • Cleanse • Audit • Process
+            </p>
+
+            <p className="mt-3 text-xs text-slate-400">
+              © 2026 DataSentinel AI. All Rights Reserved.
+            </p>
+
+          </div>
 
         </div>
 
