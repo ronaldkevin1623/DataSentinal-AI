@@ -18,14 +18,19 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 export default function DashboardPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [results, setResults] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+const [results, setResults] = useState<any>(null);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
 
   async function uploadFile() {
     if (!file) {
-      alert("Please select a CSV file.");
-      return;
-    }
+  setError(
+    "Please upload a dataset before analyzing."
+  );
+  return;
+}
+
+setError("");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -43,6 +48,15 @@ export default function DashboardPage() {
 
       const data = await response.json();
 
+      if (data.error) {
+
+        setError(data.error);
+
+        setResults(null);
+
+        return;
+      }
+
       setResults(data);
     } catch (error) {
       console.error(error);
@@ -56,55 +70,172 @@ export default function DashboardPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 px-6 py-10">
+      <main className="min-h-screen bg-[#f8fafc] px-6 py-10">
 
         <div className="w-full px-8">
 
-          <h1 className="text-5xl font-black text-slate-900">
-            Dataset Analysis Dashboard
-          </h1>
+          <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 rounded-3xl p-10 shadow-sm text-white">
 
-          <p className="mt-3 text-lg text-slate-600">
-            Upload transaction datasets and perform enterprise-grade
-            validation, cleansing and AI-powered analysis.
-          </p>
+  <div className="max-w-5xl">
+
+    <p className="text-indigo-200 font-semibold tracking-wider uppercase">
+      Enterprise Data Validation Platform
+    </p>
+
+    <h1 className="text-6xl font-black mt-3 leading-tight">
+      DataSentinel AI
+    </h1>
+
+    <p className="mt-5 text-xl text-slate-200 leading-relaxed">
+      Upload, validate, cleanse and audit transaction datasets
+      with enterprise-grade data quality checks, AI-powered
+      insights and automated reporting.
+    </p>
+
+    <div className="flex flex-wrap gap-3 mt-8">
+
+      <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+        ✓ Data Validation
+      </span>
+
+      <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+        ✓ Data Cleansing
+      </span>
+
+      <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+        ✓ Audit Reports
+      </span>
+
+      <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+        ✓ AI Insights
+      </span>
+
+      <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+        ✓ CSV Processing
+      </span>
+
+    </div>
+
+  </div>
+
+</div>
 
           {/* Upload Section */}
 
-          <div className="bg-white rounded-3xl shadow-lg p-12 mt-10">
+<div
+  className="
+  bg-white
+  rounded-[32px]
+  border
+  border-slate-200
+  shadow-sm
+  p-12
+  mt-8
+  "
+>
 
   <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">
     Upload Transaction Dataset
   </h2>
 
-  <div className="flex flex-col lg:flex-row items-center gap-6">
+  <div className="flex flex-col lg:flex-row items-center gap-4">
 
     <input
+      id="fileInput"
       type="file"
       accept=".csv,.xlsx,.xls"
-      onChange={(e) =>
-        setFile(
-          e.target.files?.[0] || null
-        )
-      }
+      onChange={(e) => {
+
+      const selectedFile =
+        e.target.files?.[0];
+
+      if (!selectedFile) return;
+
+      const allowedExtensions = [
+      ".csv",
+      ".xls",
+      ".xlsx"
+      ];
+
+      const fileName =
+        selectedFile.name.toLowerCase();
+
+      const isValidExtension =
+        allowedExtensions.some(ext =>
+          fileName.endsWith(ext)
+        );
+
+      if (!isValidExtension) {
+
+      setError(
+        "Only CSV and Excel (.csv, .xls, .xlsx) files are allowed."
+      );
+
+      e.target.value = "";
+
+      setFile(null);
+
+      setResults(null);
+
+      return;
+    }
+
+      setFile(selectedFile);
+
+      setError("");
+    }}
       className="flex-1 border-2 border-slate-300 rounded-xl p-5 text-lg"
     />
+
+    {file && (
+      <button
+        onClick={() => {
+
+  setFile(null);
+
+  setResults(null);
+
+  setError("");
+
+  const input =
+    document.getElementById(
+      "fileInput"
+    ) as HTMLInputElement;
+
+  if (input) {
+    input.value = "";
+  }
+}}
+        className="
+        bg-red-500
+        hover:bg-red-600
+        text-white
+        px-5
+        py-5
+        rounded-2xl
+        font-bold
+        shadow-lg
+        "
+      >
+        ✕
+      </button>
+    )}
 
     <button
       onClick={uploadFile}
       className="
-bg-indigo-600
-hover:bg-indigo-700
-transition
-text-white
-px-12
-py-5
-rounded-2xl
-text-xl
-font-bold
-shadow-xl
-whitespace-nowrap
-"
+      bg-blue-600
+      hover:bg-blue-700
+      transition
+      text-white
+      px-12
+      py-5
+      rounded-2xl
+      text-xl
+      font-bold
+      shadow-sm
+      whitespace-nowrap
+      "
     >
       {loading
         ? "Analyzing Dataset..."
@@ -112,6 +243,21 @@ whitespace-nowrap
     </button>
 
   </div>
+
+  {error && (
+    <div className="
+      mt-5
+      bg-red-50
+      border
+      border-red-300
+      text-red-700
+      px-4
+      py-3
+      rounded-xl
+    ">
+      ⚠ {error}
+    </div>
+  )}
 
 </div>
           
@@ -123,7 +269,7 @@ whitespace-nowrap
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
 
-                <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[180px]">
+                <div className="bg-white rounded-[28px] border border-slate-200 shadow-lg p-8 min-h-[180px]">
                   <p className="text-slate-500">
                     Total Rows
                   </p>
@@ -210,7 +356,7 @@ whitespace-nowrap
   </CardContent>
 </Card>
 
-                <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[180px]">
+                <div className="bg-white rounded-[28px] border border-slate-200 shadow-lg p-8 min-h-[180px]">
                   <p className="text-slate-500">
                     Duplicate Rows
                   </p>
@@ -220,7 +366,7 @@ whitespace-nowrap
                   </h3>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-lg p-8 min-h-[180px]">
+                <div className="bg-white rounded-[28px] border border-slate-200 shadow-lg p-8 min-h-[180px]">
                   <p className="text-slate-500">
                     Missing Values
                   </p>
@@ -255,81 +401,119 @@ whitespace-nowrap
       Validation Summary
     </Typography>
 
-    <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-5 gap-6">
 
-      <Card elevation={1}>
-        <CardContent>
+  <Card elevation={1}>
+    <CardContent>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "#334155",
+          fontWeight: 500
+        }}
+      >
+        Missing Emails
+      </Typography>
 
-          <Typography
-            variant="body2"
-            sx={{
-  color: "#334155",
-  fontWeight: 500
-}}
-          >
-            Invalid Emails
-          </Typography>
+      <Typography
+        variant="h4"
+        color="warning.main"
+        sx={{ fontWeight: 700 }}
+      >
+        {results.missing_emails}
+      </Typography>
+    </CardContent>
+  </Card>
 
-          <Typography
-            variant="h4"
-            color="error"
-            sx={{ fontWeight: 700 }}
-          >
-            {results.invalid_emails}
-          </Typography>
+  <Card elevation={1}>
+    <CardContent>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "#334155",
+          fontWeight: 500
+        }}
+      >
+        Invalid Emails
+      </Typography>
 
-        </CardContent>
-      </Card>
+      <Typography
+        variant="h4"
+        color="error"
+        sx={{ fontWeight: 700 }}
+      >
+        {results.invalid_emails}
+      </Typography>
+    </CardContent>
+  </Card>
 
-      <Card elevation={1}>
-        <CardContent>
+  <Card elevation={1}>
+    <CardContent>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "#334155",
+          fontWeight: 500
+        }}
+      >
+        Missing Phones
+      </Typography>
 
-          <Typography
-            variant="body2"
-            sx={{
-  color: "#334155",
-  fontWeight: 500
-}}
-          >
-            Invalid Phones
-          </Typography>
+      <Typography
+        variant="h4"
+        color="warning.main"
+        sx={{ fontWeight: 700 }}
+      >
+        {results.missing_phones}
+      </Typography>
+    </CardContent>
+  </Card>
 
-          <Typography
-            variant="h4"
-            color="error"
-            sx={{ fontWeight: 700 }}
-          >
-            {results.invalid_phones}
-          </Typography>
+  <Card elevation={1}>
+    <CardContent>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "#334155",
+          fontWeight: 500
+        }}
+      >
+        Invalid Phones
+      </Typography>
 
-        </CardContent>
-      </Card>
+      <Typography
+        variant="h4"
+        color="error"
+        sx={{ fontWeight: 700 }}
+      >
+        {results.invalid_phones}
+      </Typography>
+    </CardContent>
+  </Card>
 
-      <Card elevation={1}>
-        <CardContent>
+  <Card elevation={1}>
+    <CardContent>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "#334155",
+          fontWeight: 500
+        }}
+      >
+        Future Dates
+      </Typography>
 
-          <Typography
-            variant="body2"
-            sx={{
-  color: "#334155",
-  fontWeight: 500
-}}
-          >
-            Future Dates
-          </Typography>
+      <Typography
+        variant="h4"
+        color="warning.main"
+        sx={{ fontWeight: 700 }}
+      >
+        {results.future_dates}
+      </Typography>
+    </CardContent>
+  </Card>
 
-          <Typography
-            variant="h4"
-            color="warning.main"
-            sx={{ fontWeight: 700 }}
-          >
-            {results.future_dates}
-          </Typography>
-
-        </CardContent>
-      </Card>
-
-    </div>
+</div>
 
   </CardContent>
 </Card>
@@ -457,7 +641,7 @@ whitespace-nowrap
 
               {/* Payment Validation */}
 
-              <div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+              <div className="bg-white rounded-[28px] border border-slate-200 shadow-md p-8 mt-8">
 
                 <h2 className="text-3xl font-bold text-slate-900 mb-6">
                   Payment Validation
@@ -506,7 +690,7 @@ whitespace-nowrap
 </Card>
             {/* Dataset Profile */}
 
-<div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+<div className="bg-white rounded-[28px] border border-slate-200 shadow-md p-8 mt-8">
 
   <h2 className="text-3xl font-bold text-slate-900 mb-6">
     Dataset Profile
@@ -574,7 +758,7 @@ whitespace-nowrap
 
 {/* Column Summary */}
 
-<div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+<div className="bg-white rounded-[28px] border border-slate-200 shadow-md p-8 mt-8">
 
   <h2 className="text-3xl font-bold text-slate-900 mb-6">
     Column Analysis
@@ -620,7 +804,7 @@ whitespace-nowrap
   </div>
               {/* Recommendations */}
 
-              <div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+              <div className="bg-white rounded-[28px] border border-slate-200 shadow-md p-8 mt-8">
 
                 <h2 className="text-3xl font-bold text-slate-900 mb-4">
                   Recommendations
@@ -671,7 +855,7 @@ whitespace-nowrap
 
               {/* CSV Chunk Downloads */}
 
-<div className="bg-white rounded-3xl shadow-md p-8 mt-8">
+<div className="bg-white rounded-[28px] border border-slate-200 shadow-md p-8 mt-8">
 
   <h2 className="text-3xl font-bold text-slate-900 mb-6">
     CSV Chunk Downloads
@@ -722,28 +906,72 @@ whitespace-nowrap
         </div>
 
       </main>
-      <footer className="mt-20 bg-white border-t shadow-inner">
+      <footer
+  className="
+  mt-20
+  bg-slate-950
+  text-white
+  rounded-t-[40px]
+  px-12
+  py-16
+  "
+>
+  <div className="grid md:grid-cols-4 gap-10">
 
-  <div className="max-w-[1700px] mx-auto py-8 text-center">
+    <div>
+      <h3 className="text-2xl font-bold mb-4">
+        DataSentinel AI
+      </h3>
 
-    <h3 className="text-2xl font-bold text-slate-900">
-      DataSentinel AI
-    </h3>
+      <p className="text-slate-400">
+        Enterprise transaction data validation,
+        cleansing and processing platform.
+      </p>
+    </div>
 
-    <p className="mt-2 text-slate-600">
-      Enterprise Transaction Data Validation & Processing Platform
-    </p>
+    <div>
+      <h4 className="font-semibold mb-4">
+        Platform
+      </h4>
 
-    <p className="mt-2 text-slate-500">
-      Validate • Cleanse • Audit • Process
-    </p>
+      <ul className="space-y-2 text-slate-400">
+        <li>Validation Engine</li>
+        <li>Audit Reports</li>
+        <li>AI Insights</li>
+        <li>CSV Processing</li>
+      </ul>
+    </div>
 
-    <p className="mt-4 text-sm text-slate-400">
-      © 2026 DataSentinel AI. All Rights Reserved.
-    </p>
+    <div>
+      <h4 className="font-semibold mb-4">
+        Features
+      </h4>
+
+      <ul className="space-y-2 text-slate-400">
+        <li>Phone Validation</li>
+        <li>Date Validation</li>
+        <li>Payment Validation</li>
+        <li>Data Quality Checks</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 className="font-semibold mb-4">
+        Statistics
+      </h4>
+
+      <ul className="space-y-2 text-slate-400">
+        <li>5000+ Records Processed</li>
+        <li>25 CSV Chunks Generated</li>
+        <li>Audit Reports Available</li>
+      </ul>
+    </div>
 
   </div>
 
+  <div className="border-t border-slate-800 mt-10 pt-8 text-center text-slate-500">
+    © 2026 DataSentinel AI. All rights reserved.
+  </div>
 </footer>
     </>
   );

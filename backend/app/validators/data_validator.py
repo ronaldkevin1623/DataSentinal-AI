@@ -9,6 +9,17 @@ from validators.payment_validator import validate_payment_data
 
 def validate_dataset(df):
 
+    df = df.replace(
+    {
+        r'^\s*$': pd.NA,
+        r'^-$': pd.NA,
+        'N/A': pd.NA,
+        'NULL': pd.NA,
+        'null': pd.NA
+    },
+    regex=True
+    )
+    print(df.isna().sum())
     total_rows = len(df)
 
     duplicate_rows = int(
@@ -16,12 +27,14 @@ def validate_dataset(df):
     )
 
     missing_values = int(
-        df.isnull().sum().sum()
+        df.isna().sum().sum()
     )
 
     invalid_emails = 0
     invalid_phones = 0
     future_dates = 0
+    missing_emails = 0
+    missing_phones = 0
 
     email_pattern = (
         r'^[A-Za-z0-9._%+-]+'
@@ -35,17 +48,21 @@ def validate_dataset(df):
 
     if "email" in df.columns:
 
-        email_series = (
-    df["email"]
-    .dropna()
-    .astype(str)
-)
+        missing_emails = int(
+            df["email"].isna().sum()
+        )
 
-    invalid_emails = int(
-        (~email_series.str.match(
-            email_pattern
-        )).sum()
-    )
+        email_series = (
+            df["email"]
+            .dropna()
+            .astype(str)
+        )
+
+        invalid_emails = int(
+            (~email_series.str.match(
+                email_pattern
+            )).sum()
+        )
 
     # -----------------------------
     # Phone Validation
@@ -56,9 +73,16 @@ def validate_dataset(df):
         and "country_code" in df.columns
     ):
 
+        missing_phones = int(
+        df["phone_number"].isna().sum()
+    )
+
         invalid_phones = 0
 
         for _, row in df.iterrows():
+
+            if pd.isna(row["phone_number"]):
+                continue
 
             if not validate_phone(
                 row["phone_number"],
@@ -150,7 +174,7 @@ def validate_dataset(df):
             ),
 
             "missing_values": int(
-                df[col].isnull().sum()
+                df[col].isna().sum()
             ),
 
             "unique_values": int(
@@ -251,7 +275,11 @@ def validate_dataset(df):
 
         "missing_values": missing_values,
 
+        "missing_emails": missing_emails,
+
         "invalid_emails": invalid_emails,
+
+        "missing_phones": missing_phones,
 
         "invalid_phones": invalid_phones,
 

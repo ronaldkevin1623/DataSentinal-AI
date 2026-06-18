@@ -3,6 +3,13 @@ import pandas as pd
 
 def profile_dataset(df):
 
+    # Convert common missing value placeholders
+    df = df.replace(
+        [r'^\s*$', 'N/A', 'NULL', 'null', '-'],
+        pd.NA,
+        regex=True
+    )
+
     total_columns = len(df.columns)
 
     numeric_columns = len(
@@ -32,15 +39,18 @@ def profile_dataset(df):
 
             "column": col,
 
-            "dtype": str(df[col].dtype),
+            "dtype": str(
+                df[col].dtype
+            ),
 
             "missing_values": int(
-                df[col].isnull().sum()
+                df[col].isna().sum()
             ),
 
             "unique_values": int(
                 df[col].nunique()
             )
+
         })
 
     return {
@@ -58,4 +68,5 @@ def profile_dataset(df):
 
         "column_summary":
         column_summary
+
     }

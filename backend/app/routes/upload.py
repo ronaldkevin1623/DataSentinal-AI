@@ -62,6 +62,20 @@ async def upload_file(file: UploadFile = File(...)):
         print("Filename:", file.filename)
         print("Rows:", len(df))
         print("Columns:", list(df.columns))
+
+        print("\nDATAFRAME:")
+        print(df.head())
+
+        if "order_date" in df.columns:
+            print("\nORDER DATE COLUMN:")
+            print(df["order_date"])
+
+            print("\nORDER DATE MISSING COUNT:")
+            print(df["order_date"].isna().sum())
+
+        print("\nDTYPES:")
+        print(df.dtypes)
+
         print("===============================\n")
 
         # Validation

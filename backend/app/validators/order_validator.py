@@ -12,10 +12,11 @@ def validate_order_data(df):
 
         for value in df["order_date"]:
 
-            if not validate_date(value):
+            if validate_date(value):
+                continue
 
-                invalid_order_dates += 1
-                invalid_date_formats += 1
+            invalid_order_dates += 1
+            invalid_date_formats += 1
 
     return {
 

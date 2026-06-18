@@ -1,4 +1,5 @@
 from datetime import datetime
+import pandas as pd
 
 
 DATE_FORMATS = [
@@ -17,10 +18,17 @@ DATE_FORMATS = [
 
 def validate_date(date_value):
 
-    if not date_value:
+    if pd.isna(date_value):
         return False
 
+    # Handle already parsed datetime objects
+    if isinstance(date_value, (datetime, pd.Timestamp)):
+        return True
+
     date_value = str(date_value).strip()
+
+    if date_value == "":
+        return False
 
     for fmt in DATE_FORMATS:
 
@@ -31,7 +39,7 @@ def validate_date(date_value):
             )
             return True
 
-        except:
-            pass
+        except ValueError:
+            continue
 
     return False

@@ -1,6 +1,6 @@
 import json
 import os
-
+import pandas as pd
 
 CONFIG_PATH = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
@@ -14,6 +14,9 @@ with open(CONFIG_PATH, "r") as f:
 
 
 def validate_phone(phone, country_code):
+
+    if pd.isna(phone) or pd.isna(country_code):
+        return False
 
     country_code = str(country_code).upper()
 
