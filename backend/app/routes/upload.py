@@ -5,7 +5,7 @@ from app.services.audit_report import (
 )
 import pandas as pd
 import io
-
+import os
 from app.validators.data_validator import validate_dataset
 from app.ai.insights import generate_insights
 
@@ -20,6 +20,8 @@ from app.services.profiler import (
     profile_dataset
 )
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 router = APIRouter()
 
 
@@ -137,8 +139,13 @@ async def upload_file(file: UploadFile = File(...)):
 @router.get("/download/cleaned")
 def download_cleaned():
 
+    file_path = os.path.join(
+        OUTPUT_DIR,
+        "cleaned_output.csv"
+    )
+
     return FileResponse(
-        "outputs/cleaned_output.csv",
+        file_path,
         media_type="text/csv",
         filename="cleaned_output.csv"
     )
@@ -147,8 +154,13 @@ def download_cleaned():
 @router.get("/download/errors")
 def download_errors():
 
+    file_path = os.path.join(
+        OUTPUT_DIR,
+        "error_report.csv"
+    )
+
     return FileResponse(
-        "outputs/error_report.csv",
+        file_path,
         media_type="text/csv",
         filename="error_report.csv"
     )
@@ -157,19 +169,29 @@ def download_errors():
 @router.get("/download/chunk/{chunk_id}")
 def download_chunk(chunk_id: int):
 
-    path = f"outputs/chunks/chunk_{chunk_id}.csv"
+    file_path = os.path.join(
+        OUTPUT_DIR,
+        "chunks",
+        f"chunk_{chunk_id}.csv"
+    )
 
     return FileResponse(
-        path,
+        file_path,
         media_type="text/csv",
         filename=f"chunk_{chunk_id}.csv"
     )
 
+
 @router.get("/download/audit")
 def download_audit():
 
+    file_path = os.path.join(
+        OUTPUT_DIR,
+        "audit_report.pdf"
+    )
+
     return FileResponse(
-        "outputs/audit_report.pdf",
+        file_path,
         media_type="application/pdf",
         filename="audit_report.pdf"
     )
