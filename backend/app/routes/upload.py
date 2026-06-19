@@ -99,6 +99,9 @@ async def upload_file(file: UploadFile = File(...)):
         **results
     }
 )
+        print("RESULTS USED FOR PDF")
+        print(results)
+        print("PDF PATH:", audit_report)
 
         # CSV Chunking
         chunk_files = split_csv_into_chunks(df)
