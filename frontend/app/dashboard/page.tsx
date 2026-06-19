@@ -39,7 +39,7 @@ setError("");
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/upload",
+        "https://datasentinel-ai-api.onrender.com/upload",
         {
           method: "POST",
           body: formData,

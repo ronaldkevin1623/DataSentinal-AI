@@ -7,7 +7,7 @@ export default function DownloadSection({
   cleanedFile,
   errorReport,
 }: Props) {
-  const API = "http://127.0.0.1:8000";
+  const API = "https://datasentinel-ai-api.onrender.com";
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 mt-8 mb-8">
