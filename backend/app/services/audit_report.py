@@ -615,8 +615,12 @@ Memory Usage:
     )
 )
 
-    doc.build(
-        elements
-    )
+    doc.build(elements)
 
+    print("AUDIT PDF CREATED:", output_path)
+    print("FILE SIZE:", os.path.getsize(output_path))
+    print("AUDIT PDF CREATED:", output_path)
+
+    if os.path.exists(output_path):
+        print("AUDIT PDF SIZE:", os.path.getsize(output_path))
     return output_path

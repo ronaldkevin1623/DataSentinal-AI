@@ -102,7 +102,8 @@ async def upload_file(file: UploadFile = File(...)):
         print("RESULTS USED FOR PDF")
         print(results)
         print("PDF PATH:", audit_report)
-
+        print("PDF EXISTS:", os.path.exists(audit_report))
+        print("PDF SIZE:", os.path.getsize(audit_report))
         # CSV Chunking
         chunk_files = split_csv_into_chunks(df)
 
@@ -192,6 +193,12 @@ def download_audit():
         OUTPUT_DIR,
         "audit_report.pdf"
     )
+
+    print("DOWNLOADING:", file_path)
+    print("EXISTS:", os.path.exists(file_path))
+
+    if os.path.exists(file_path):
+        print("SIZE:", os.path.getsize(file_path))
 
     return FileResponse(
         file_path,
