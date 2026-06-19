@@ -222,25 +222,44 @@ setError("");
     )}
 
     <button
-      onClick={uploadFile}
-      className="
-      bg-blue-600
-      hover:bg-blue-700
-      transition
-      text-white
-      px-12
-      py-5
-      rounded-2xl
-      text-xl
-      font-bold
-      shadow-sm
-      whitespace-nowrap
-      "
-    >
-      {loading
-        ? "Analyzing Dataset..."
-        : "Analyze Dataset"}
-    </button>
+  onClick={uploadFile}
+  disabled={loading}
+  className="
+  bg-blue-600
+  hover:bg-blue-700
+  transition
+  text-white
+  px-12
+  py-5
+  rounded-2xl
+  text-xl
+  font-bold
+  shadow-sm
+  whitespace-nowrap
+  disabled:opacity-70
+  disabled:cursor-not-allowed
+  "
+>
+  {loading ? (
+    <div className="flex items-center gap-3">
+      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      <span>Analyzing Dataset...</span>
+    </div>
+  ) : (
+    "Analyze Dataset"
+  )}
+</button>
+{loading && (
+  <div className="mt-4 w-full text-center">
+    <p className="text-blue-600 font-semibold text-lg">
+      Analyzing dataset...
+    </p>
+
+    <p className="text-gray-500 text-sm">
+      Please wait while DataSentinel AI validates your data
+    </p>
+  </div>
+)}
 
   </div>
 
