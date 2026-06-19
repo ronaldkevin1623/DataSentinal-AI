@@ -1,22 +1,22 @@
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import FileResponse
-from services.audit_report import (
+from app.services.audit_report import (
     generate_audit_report
 )
 import pandas as pd
 import io
 
-from validators.data_validator import validate_dataset
-from ai.insights import generate_insights
+from app.validators.data_validator import validate_dataset
+from app.ai.insights import generate_insights
 
-from services.file_processor import (
+from app.services.file_processor import (
     generate_cleaned_file,
     generate_error_report
 )
 
-from services.chunker import split_csv_into_chunks
+from app.services.chunker import split_csv_into_chunks
 
-from services.profiler import (
+from app.services.profiler import (
     profile_dataset
 )
 
