@@ -1,4 +1,4 @@
-from validators.date_validator import (
+from app.validators.date_validator import (
     validate_date
 )
 

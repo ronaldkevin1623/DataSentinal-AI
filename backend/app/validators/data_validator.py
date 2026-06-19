@@ -1,10 +1,10 @@
 import pandas as pd
 from datetime import datetime
 
-from validators.phone_validator import validate_phone
-from validators.order_validator import validate_order_data
-from validators.product_validator import validate_product_data
-from validators.payment_validator import validate_payment_data
+from app.validators.phone_validator import validate_phone
+from app.validators.order_validator import validate_order_data
+from app.validators.product_validator import validate_product_data
+from app.validators.payment_validator import validate_payment_data
 
 
 def validate_dataset(df):

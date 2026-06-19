@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-from validators.date_validator import validate_date
-from validators.phone_validator import validate_phone
+from app.validators.date_validator import validate_date
+from app.validators.phone_validator import validate_phone
 
 OUTPUT_DIR = "outputs"
 
