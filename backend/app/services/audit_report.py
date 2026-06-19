@@ -12,7 +12,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import KeepTogether
 import os
 
-OUTPUT_DIR = "outputs"
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 
 os.makedirs(
     OUTPUT_DIR,

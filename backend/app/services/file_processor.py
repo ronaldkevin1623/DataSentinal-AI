@@ -3,7 +3,8 @@ import os
 from app.validators.date_validator import validate_date
 from app.validators.phone_validator import validate_phone
 
-OUTPUT_DIR = "outputs"
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 
 os.makedirs(
     OUTPUT_DIR,
